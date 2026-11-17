@@ -1,0 +1,6 @@
+CREATE TEMP TABLE direct_merge ON COMMIT DROP AS WITH pairs AS (SELECT c.id,c.created_at,string_agg(cp.user_id,':' ORDER BY cp.user_id) direct_key FROM conversations c JOIN conversation_participants cp ON cp.conversation_id=c.id WHERE c.kind='direct' GROUP BY c.id HAVING count(*)=2) SELECT id,direct_key,first_value(id) OVER(PARTITION BY direct_key ORDER BY created_at,id) canonical_id FROM pairs;
+UPDATE conversations SET direct_key=NULL WHERE kind='direct';
+UPDATE messages m SET conversation_id=d.canonical_id FROM direct_merge d WHERE m.conversation_id=d.id AND d.id<>d.canonical_id;
+INSERT INTO conversation_participants(conversation_id,user_id,role,last_read_at,muted,pinned) SELECT d.canonical_id,cp.user_id,CASE WHEN bool_or(cp.role='admin') THEN 'admin' ELSE 'member' END,max(cp.last_read_at),bool_or(cp.muted),bool_or(cp.pinned) FROM conversation_participants cp JOIN direct_merge d ON d.id=cp.conversation_id WHERE d.id<>d.canonical_id GROUP BY d.canonical_id,cp.user_id ON CONFLICT(conversation_id,user_id) DO UPDATE SET last_read_at=greatest(conversation_participants.last_read_at,excluded.last_read_at);
+DELETE FROM conversations c USING direct_merge d WHERE c.id=d.id AND d.id<>d.canonical_id;
+UPDATE conversations c SET direct_key=d.direct_key FROM direct_merge d WHERE c.id=d.canonical_id AND d.id=d.canonical_id;

@@ -1,0 +1,58 @@
+{
+  "measured_at": "2026-11-17T15:37:17.727Z",
+  "environment": "Local Windows development server with embedded PostgreSQL and fictional fixtures",
+  "scope": "Small development smoke measurement. Not a p75 Core Web Vitals measurement or a production scalability claim.",
+  "measurements": {
+    "login": 1728,
+    "feed": {
+      "samples_ms": [
+        317,
+        333,
+        321,
+        202,
+        180
+      ],
+      "median_ms": 317,
+      "max_ms": 333
+    },
+    "search": {
+      "samples_ms": [
+        315,
+        218,
+        244,
+        914,
+        693
+      ],
+      "median_ms": 315,
+      "max_ms": 914
+    },
+    "organization": {
+      "samples_ms": [
+        446,
+        319,
+        209,
+        345,
+        250
+      ],
+      "median_ms": 319,
+      "max_ms": 446
+    },
+    "history": {
+      "samples_ms": [
+        330,
+        196,
+        204,
+        325,
+        471
+      ],
+      "median_ms": 325,
+      "max_ms": 471
+    },
+    "message_persistence_ms": 508,
+    "ten_concurrent_feed_reads": {
+      "elapsed_ms": 2469,
+      "successful": 10,
+      "total": 10
+    }
+  }
+}
